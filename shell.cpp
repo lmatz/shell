@@ -11,7 +11,7 @@ int main() {
 //	signal(SIGTERM,SIG_IGN);
 //	signal(SIGQUIT,SIG_IGN);
 //	signal(SIGTSTP,SIG_IGN);
-	printf("----------------------shell start------------------------\n");
+	printf("-----------------------shell start------------------------\n");
 	while (1) {
 		prompt();
 		readthisline();
