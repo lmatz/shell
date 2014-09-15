@@ -26,8 +26,9 @@ command  : 5
 #include <stdlib.h>
 #include <io.h>
 #include <string.h>
+#include <iostream>
 
-
+using namespace std;
 
 
 static char *current;
@@ -55,7 +56,9 @@ bool s1();
 bool s2();
 bool s3();
 bool s4();
-
+bool recursive();
+bool command();
+bool term();
 
 
 #endif /* INTERPRETER_H_ */
