@@ -13,7 +13,7 @@
 10: input filename
 11: output filename
 12: arg without star
-
+13: empty
 filename : 5 || 6
 arg      : 5 || 6 || 7
 built-in : 6
@@ -21,18 +21,22 @@ command  : 5
 
 */
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <io.h>
 #include <string.h>
 #include <string>
 #include < direct.h.>
 #include "Interpreter.h"
+
 using namespace std;
 
 void delete_command() {
 	while(num_com) {
-		commandstring[num_com--]=NULL;
+		commandstring[num_com]=NULL;
+		token_type[num_com--]=-1;
 	}
+	num_current=0;
 }
 
 
@@ -58,6 +62,9 @@ void readthisline() {
 	checktype();
 	if (start()) {
 		printf("valid!\n");
+	}
+	else {
+		printf("invalid\n");
 	}
 }
 
@@ -86,14 +93,6 @@ void checktype() {
 	}
 }
 
-//bool term(char *string) {
-//	if (strcmp(commandstring[num_current++],string)==0) {
-//		return 1;
-//	}
-//	else {
-//		return 0;
-//	}
-//}
 
 
 int check_commandname(char * str) {
@@ -136,13 +135,47 @@ bool s1() {
 	if (token_type[num_current]==-1) {
 		return 1;
 	}
+	return 0;
 }
 bool s2() {
-	return 1;
+	if (token_type[num_current]==6||token_type[num_current]==9) {
+		token_type[num_current]=9;
+		++num_current;
+		if ( token_type[num_current]==5) {
+			++num_current;
+			return 1;
+		}
+	}
+	return 0;
 }
 bool s3() {
-	return 1;
+	if (command()) {
+		if ( recursive()||term() ) {
+			
+		}
+	}
+	return 0;
 }
 bool s4() {
-	return 1;
+	return 0;
+}
+
+bool recursive() {
+	return 0;
+}
+
+bool command() {
+	if (token_type[num_current]==5||token_type[num_current]==8) {
+		token_type[num_current]==8;
+		++num_current;
+		if (token_type[num_current]==5||token_type[num_current]==6||token_type[num_current]==7) {
+			++num_current;
+			return 1;
+		}
+	}
+	return 0;
+}
+
+bool term() {
+	return 0;
 }
