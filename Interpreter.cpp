@@ -1,5 +1,5 @@
 /*
-0: wrong input;
+99: wrong input;
 15: not determined
 1 : '|'
 2 : '<'
@@ -22,10 +22,12 @@ command  : 5
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <io.h>
 #include <string.h>
+#include <string>
+#include < direct.h.>
 #include "Interpreter.h"
-
+using namespace std;
 
 void delete_command() {
 	while(num_com) {
@@ -46,12 +48,16 @@ void tokenize() {
 		commandstring[num_com++]=pch;
 		pch=strtok(NULL," \n");
 	}
-	parse_command();
 }
 
 void readthisline() {
 	if (fgets(commandline,256,stdin)!=NULL) {
 		tokenize();
+	}
+	parse_command();
+	checktype();
+	if (start()) {
+		printf("valid!\n");
 	}
 }
 
@@ -62,41 +68,42 @@ void parse_command() {
 		printf("%d : %s ",i,commandstring[i]);
 		i++;
 	}
-	printf("\n");
-}
-
-bool term(char *string) {
-	if (strcmp(commandstring[num_current++],string)==0) {
-		return 1;
-	}
-	else {
-		return 0;
+	if (num_com!=0) {
+		printf("\n");
 	}
 }
 
-
-bool start() {
-	token=commandstring[num_current];
-	return (s1()||s2()||s3()||s4());
+void checktype() {
+	int i;
+	for (i=0;i<num_com;i++) {
+		token_type[i]=check_commandname(commandstring[i]);
+	}
+	for (i=0;i<num_com;i++) {
+		printf("%d  ",token_type[i]);
+	}
+	if (num_com!=0) {
+		printf("\n");
+	}
 }
 
-bool s1() {
-	return 1;
-}
-bool s2() {
-	return 1;
-}
-bool s3() {
-	return 1;
-}
-bool s4() {
-	return 1;
-}
+//bool term(char *string) {
+//	if (strcmp(commandstring[num_current++],string)==0) {
+//		return 1;
+//	}
+//	else {
+//		return 0;
+//	}
+//}
+
 
 int check_commandname(char * str) {
-	int len=strlen(str);
+	string same_str(str);
+	int len=same_str.length();
 	bool star=false;
 	char c;
+	if (len==0) {
+		return 13;
+	}
 	if (len==1) {
 		c=str[0];
 		switch(c) {
@@ -106,6 +113,36 @@ int check_commandname(char * str) {
 		}
 	}
 	if (len==2) {
-		if (str[0]=='>' && str[1]=='>') return 4;
+		if (str[0]=='>' && str[1]=='>') return 4 ;
 	}
+	if (same_str=="cd" || same_str=="exit" || same_str=="fg" || same_str=="jobs") return 6 ;
+	for (int i=0; i<len; i++)
+	{
+		c=str[i];
+		if (c==9 || c==32 || c==62 || c==60 || c==124 || c==33 || c==96 ||c==39 || c==34) return 99;
+		if (c==42) star=true;
+	}
+	if (star) return 7;
+	else return 5;
+}
+
+
+bool start() {
+	return (s1()||s2()||s3()||s4());
+}
+
+
+bool s1() {
+	if (token_type[num_current]==-1) {
+		return 1;
+	}
+}
+bool s2() {
+	return 1;
+}
+bool s3() {
+	return 1;
+}
+bool s4() {
+	return 1;
 }
