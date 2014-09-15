@@ -1,5 +1,5 @@
 /*
-0: wrong input;
+99: wrong input;
 15: not determined
 1 : '|'
 2 : '<'
@@ -24,7 +24,7 @@ command  : 5
 #define INTERPRETER_H_
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <io.h>
 #include <string.h>
 
 
@@ -33,6 +33,7 @@ command  : 5
 static char *current;
 static char commandline[256];
 static char *commandstring[10];
+static int token_type[100]={-1};
 static int num_com=0;
 static char * token;
 static char * next;
@@ -41,8 +42,8 @@ static int num_current=0;
 
 
 
-
-
+void checktype();
+int check_commandname(char * str);
 void delete_command();
 void prompt();
 void tokenize();
