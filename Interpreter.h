@@ -24,7 +24,7 @@ command  : 5
 #define INTERPRETER_H_
 #include <stdio.h>
 #include <stdlib.h>
-#include <io.h>
+#include <unistd.h>
 #include <string.h>
 #include <iostream>
 
@@ -34,7 +34,7 @@ using namespace std;
 static char *current;
 static char commandline[256];
 static char *commandstring[10];
-static int token_type[100]={-1};
+static int token_type[100];
 static int num_com=0;
 static char * token;
 static char * next;
@@ -60,5 +60,4 @@ bool recursive();
 bool command();
 bool term();
 
-
-#endif /* INTERPRETER_H_ */
+#endif
