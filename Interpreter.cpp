@@ -18,18 +18,76 @@ filename : 5 || 6
 arg      : 5 || 6 || 7
 built-in : 6
 command  : 5
-
 */
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 #include <string>
+#include <vector>
+#include <deque>
 #include "Interpreter.h"
 
 using namespace std;
 
+// 将token类型转换为相对应的symbol。因为刚读入时无法判断具体情况，parse万之后有改动。
+void type_to_symbol() {
+	int _count=0;
+	while (_count< num_com) {
+		switch(token_type[_count]) {
+		case 1:
+			symbol.push_back("Pipe");
+			break;
+//		case 2:
+//			break;
+//		case 3:
+//			break;
+//		case 4:
+//			break;
+		case 5:
+			symbol.push_back("Command Name");
+			break;
+		case 6:
+			symbol.push_back("Argument");
+			break;
+		case 7:
+			symbol.push_back("Argument");
+			break;
+		case 8:
+			symbol.push_back("Command Name");
+			break;
+		case 9:
+			symbol.push_back("Built-in Command");
+			break;
+//		case 10:
+//			break;
+//		case 11:
+//			break;
+		case 12:
+			symbol.push_back("Argument");
+			break;
+		default:
+			symbol.push_back("Not decide yet");
+		}
+		_count++;
+	}
+}
+
+
+
+void format_print() {
+	int i;
+	for (i=0;i<num_com;i++) {
+		printf("Token %d: \"%s\" ",i+1,commandstring[i]);
+	cout<<"("<<symbol[i]<<")";
+	cout<<endl;
+	}
+}
+
+
+
+
+//将每次读入的commandstring和token_type重置。
 void delete_command() {
 	while(num_com) {
 		commandstring[num_com--]=NULL;
@@ -40,12 +98,13 @@ void delete_command() {
 	num_current=0;
 }
 
-
+//prompt
 void prompt() {
 	delete_command();
 	printf("[3150 shell:%s]$", getcwd(current,256));
 }
 
+//将command line分成一个一个token放入commandstring。
 void tokenize() {
 	char *pch;
 	pch=strtok(commandline," \n");
@@ -55,13 +114,21 @@ void tokenize() {
 	}
 }
 
+//读入commandline，调用tokennize，然后判断是否复合语法及pipe个数，输出错误信息。
 void readthisline() {
+	bool flag;
 	if (fgets(commandline,256,stdin)!=NULL) {
 		tokenize();
 	}
-	parse_command();
 	checktype();
-	if (start()) {
+	flag=start();
+	if ( flag && checkpipe()) {
+		for (int i=0;i<num_com;i++) {
+					printf("%d ",token_type[i]);
+		}
+		cout<<endl;
+		type_to_symbol();
+		format_print();
 		printf("Correct!!!\n");
 	}
 	else {
@@ -69,33 +136,37 @@ void readthisline() {
 	}
 }
 
-void parse_command() {
-	int i=0;
-	int _count=num_com;
-	while (_count--) {
-		printf("%d : %s ",i,commandstring[i]);
-		i++;
-	}
-	if (num_com!=0) {
-		printf("\n");
-	}
-}
-
+//调用check_command，将token分类，并且按格式输出。
 void checktype() {
 	int i;
+	if (num_com==0) {
+		return;
+	}
 	for (i=0;i<num_com;i++) {
 		token_type[i]=check_commandname(commandstring[i]);
 	}
 	for (i=0;i<num_com;i++) {
-		printf("%d  ",token_type[i]);
+			printf("%d ",token_type[i]);
 	}
-	if (num_com!=0) {
-		printf("\n");
-	}
+	cout<<endl;
 }
 
+//检查pipe个数，不超过或等于3个。
+bool checkpipe() {
+	int i;
+	int count=0;
+	for (i=0;i<num_com;i++) {
+		if (token_type[i]==1) {
+			++count;
+		}
+	}
+	if (count>=3) {
+		return 0;
+	}
+	return 1;
+}
 
-
+//将token分类，但是对builtin的要另外考虑*****还没完成
 int check_commandname(char * str) {
 	string same_str(str);
 	int len=same_str.length();
@@ -110,6 +181,7 @@ int check_commandname(char * str) {
 		case '|':return 1;
 		case '<':return 2;
 		case '>':return 3;
+		case '*':return 7;
 		}
 	}
 	if (len==2) {
@@ -127,6 +199,9 @@ int check_commandname(char * str) {
 }
 
 
+
+
+//以下是个recursive descent parser。
 bool start() {
 	return ( s1() || s2() || s3() || s4() );
 }
@@ -202,4 +277,7 @@ bool term() {
 	}
 	return 0;
 }
+
+
+
 
