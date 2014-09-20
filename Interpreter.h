@@ -25,15 +25,17 @@ command  : 5
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
+#include <string>
 #include <iostream>
+#include <vector>
+#include <deque>
 
 using namespace std;
 
-
+static vector<string> symbol;
 static char *current;
 static char commandline[256];
-static char *commandstring[10];
+static char *commandstring[100];
 static int token_type[100];
 static int num_com=0;
 static char * token;
@@ -42,14 +44,14 @@ static int num_current=0;
 
 
 
-
+void format_print();
 void checktype();
 int check_commandname(char * str);
 void delete_command();
 void prompt();
 void tokenize();
 void readthisline();
-void parse_command();
+bool checkpipe();
 bool term(char *string);
 bool start();
 bool s1();
