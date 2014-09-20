@@ -27,6 +27,7 @@ command  : 5
 #include <vector>
 #include <deque>
 #include "Interpreter.h"
+#include "Builtin.h"
 
 using namespace std;
 
@@ -95,13 +96,15 @@ void delete_command() {
 	for (int i=0;i<99;i++) {
 		token_type[i]=-1;
 	}
+	symbol.clear();
+	cd_check=false;
 	num_current=0;
 }
 
 //prompt
 void prompt() {
 	delete_command();
-	printf("[3150 shell:%s]$", getcwd(current,256));
+	printf("[3150 shell:%s]$", getCurrentDic().c_str());
 }
 
 //将command line分成一个一个token放入commandstring。
@@ -132,7 +135,7 @@ void readthisline() {
 		printf("Correct!!!\n");
 	}
 	else {
-		printf("Error: invalid input command line\n");
+		fprintf(stdout, "Error: invalid input command line\n");
 	}
 }
 
@@ -214,12 +217,26 @@ bool s1() {
 	return 0;
 }
 bool s2() {
+	bool loop_check=false;
 	int record=num_current;
 	if (token_type[num_current]==6||token_type[num_current]==9) {
+		string same_str(commandstring[num_current]);
+		if (same_str=="cd") {
+			cd_check=true;
+		}
 		token_type[num_current]=9;
 		++num_current;
 		while (token_type[num_current]==5||token_type[num_current]==6||token_type[num_current]==7) {
-					++num_current;
+			if (cd_check && loop_check) {
+				fprintf(stdout,"cd: wrong number of arguments");
+				num_current=record;
+				return 0;
+			}
+			if (token_type[num_current]!=7) {
+				token_type[num_current]=12;
+			}
+			++num_current;
+			loop_check=true;
 		}
 		return 1;
 	}
@@ -263,6 +280,9 @@ bool command() {
 		token_type[num_current]=8;
 		++num_current;
 		while (token_type[num_current]==5||token_type[num_current]==6||token_type[num_current]==7) {
+			if (token_type[num_current]!=7) {
+				token_type[num_current]=12;
+			}
 			++num_current;
 		}
 		return 1;
