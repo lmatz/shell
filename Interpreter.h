@@ -41,6 +41,7 @@ static int num_com=0;
 static char * token;
 static char * next;
 static int num_current=0;
+static bool cd_check=false;
 
 
 
