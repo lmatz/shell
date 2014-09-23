@@ -1,10 +1,10 @@
-#include <stdio.h>
-#include <iostream>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string>
-#include <vector>
-#include <deque>
+//#include <stdio.h>
+//#include <iostream>
+//#include <stdlib.h>
+//#include <unistd.h>
+//#include <string>
+//#include <vector>
+//#include <deque>
 #include "Builtin.h"
 
 using namespace std;
@@ -43,9 +43,16 @@ void builtin_cd() {
 			path_f.append("/").append(path);
 		}
 		const char * path_change=path_f.c_str();
+		printf("%d",chdir(path_change));
+		printf("Using cd Command!");
 		if (chdir(path_change)) {
 			cout<<"["<<path<<"]: cannot change directory";
 		}
 	}
+}
+
+void builtin_exit() {
 
 }
+
+
