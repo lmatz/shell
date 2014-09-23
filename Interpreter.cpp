@@ -27,9 +27,12 @@ command  : 5
 #include <vector>
 #include <deque>
 #include "Interpreter.h"
-#include "Builtin.h"
 
 using namespace std;
+
+char *commandstring[100];
+int num_com=0;
+
 
 // 将token类型转换为相对应的symbol。因为刚读入时无法判断具体情况，parse万之后有改动。
 void type_to_symbol() {
@@ -97,8 +100,8 @@ void delete_command() {
 		token_type[i]=-1;
 	}
 	symbol.clear();
-	cd_check=false;
 	num_current=0;
+	error_exception=false;
 }
 
 //prompt
@@ -118,13 +121,17 @@ void tokenize() {
 }
 
 //读入commandline，调用tokennize，然后判断是否复合语法及pipe个数，输出错误信息。
-void readthisline() {
+bool readthisline() {
 	bool flag;
 	if (fgets(commandline,256,stdin)!=NULL) {
 		tokenize();
 	}
 	checktype();
 	flag=start();
+	for (int i=0;i<num_com;i++) {
+		printf("%d ",token_type[i]);
+	}
+
 	if ( flag && checkpipe()) {
 		for (int i=0;i<num_com;i++) {
 					printf("%d ",token_type[i]);
@@ -133,9 +140,14 @@ void readthisline() {
 		type_to_symbol();
 		format_print();
 		printf("Correct!!!\n");
+		return true;
+	}
+	else if(error_exception) {
+		return false;
 	}
 	else {
 		fprintf(stdout, "Error: invalid input command line\n");
+		return false;
 	}
 }
 
@@ -217,26 +229,41 @@ bool s1() {
 	return 0;
 }
 bool s2() {
-	bool loop_check=false;
+	bool cd_check=false;
+	bool exit_check=false;
+	int arg=0;
 	int record=num_current;
 	if (token_type[num_current]==6||token_type[num_current]==9) {
 		string same_str(commandstring[num_current]);
 		if (same_str=="cd") {
+			error_exception=true;
 			cd_check=true;
+		}
+		if (same_str=="exit") {
+			error_exception=true;
+			exit_check=true;
 		}
 		token_type[num_current]=9;
 		++num_current;
 		while (token_type[num_current]==5||token_type[num_current]==6||token_type[num_current]==7) {
-			if (cd_check && loop_check) {
-				fprintf(stdout,"cd: wrong number of arguments");
-				num_current=record;
-				return 0;
+			if (cd_check) {
+				arg+=1;
+			}
+			if (exit_check) {
+				arg+=1;
 			}
 			if (token_type[num_current]!=7) {
 				token_type[num_current]=12;
 			}
 			++num_current;
-			loop_check=true;
+		}
+		if ( (cd_check) && (arg==0 || arg>=2) ) {
+			fprintf(stdout,"cd: wrong number of arguments\n");
+			return 0;
+		}
+		if ( (exit_check) && arg!=0) {
+			fprintf(stdout,"exit: wrong number of arguments\n");
+			return 0;
 		}
 		return 1;
 	}
@@ -279,7 +306,7 @@ bool command() {
 	if (token_type[num_current]==5||token_type[num_current]==8) {
 		token_type[num_current]=8;
 		++num_current;
-		while (token_type[num_current]==5||token_type[num_current]==6||token_type[num_current]==7) {
+		while (token_type[num_current]==5||token_type[num_current]==6||token_type[num_current]==7||token_type[num_current]==12) {
 			if (token_type[num_current]!=7) {
 				token_type[num_current]=12;
 			}
