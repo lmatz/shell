@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <string.h>
 #include "Interpreter.h"
+#include "Builtin.h"
+#include "execute.h"
+
 
 
 
@@ -14,6 +17,12 @@ int main() {
 	printf("-----------------------shell start------------------------\n");
 	while (1) {
 		prompt();
-		readthisline();
+		if (readthisline()){
+			execute();
+		}
 	}
 }
+
+
+
+
