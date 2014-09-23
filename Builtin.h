@@ -7,6 +7,7 @@
 
 #ifndef BUILTIN_H_
 #define BUILTIN_H_
+
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
@@ -15,10 +16,15 @@
 #include <vector>
 #include <deque>
 #include "Interpreter.h"
+#include "execute.h"
 
 using namespace std;
 
+extern char * commandstring[100];
+
 
 string getCurrentDic();
+void builtin_cd();
+void builtin_exit();
 
 #endif /* BUILTIN_H_ */
