@@ -29,19 +29,22 @@ command  : 5
 #include <iostream>
 #include <vector>
 #include <deque>
+#include "Builtin.h"
 
 using namespace std;
 
 static vector<string> symbol;
 static char *current;
 static char commandline[256];
-static char *commandstring[100];
+extern char *commandstring[100];
 static int token_type[100];
-static int num_com=0;
+extern int num_com;
 static char * token;
 static char * next;
 static int num_current=0;
-static bool cd_check=false;
+static int cd_arg=0;
+static bool error_exception=false;
+
 
 
 
@@ -51,7 +54,7 @@ int check_commandname(char * str);
 void delete_command();
 void prompt();
 void tokenize();
-void readthisline();
+bool readthisline();
 bool checkpipe();
 bool term(char *string);
 bool start();
