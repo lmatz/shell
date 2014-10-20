@@ -9,19 +9,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include <string.h>
+#include <termios.h>
 #include "Interpreter.h"
-#include "Builtin.h"
 #include "execute.h"
 
-bool debug=true;
+bool debug=false;
+
+
+
 
 
 int main() {
-//    	signal(SIGINT,SIG_IGN);
+//        init_shell();
+    	signal(SIGINT,SIG_IGN);
     	signal(SIGTERM,SIG_IGN);
     	signal(SIGQUIT,SIG_IGN);
     	signal(SIGTSTP,SIG_IGN);
+        signal (SIGCHLD, SIG_DFL);
     printf("-----------------------shell start------------------------\n");
     while (1) {
         prompt();
