@@ -16,14 +16,18 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <signal.h>
+#include <cstdlib>
 #include "Interpreter.h"
 #include "execute.h"
 
 using namespace std;
 
-extern bool debug;
+//extern bool debug;
 
-extern char * commandstring[100];
+//extern char * commandstring[100];
+
+
 
 
 string getCurrentDic();
