@@ -33,6 +33,7 @@
 #ifndef __shell__Interpreter__
 #define __shell__Interpreter__
 
+#include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -44,11 +45,13 @@
 
 using namespace std;
 
-extern bool debug;
+//extern bool debug;
 extern bool suspend;
 
+//exeucte的东西
+//extern glob_t wild_ex[3];
 
-
+//
 extern char *commandstring[100];
 extern int num_com;
 extern int token_type[100];
@@ -57,6 +60,7 @@ extern char * argument[3][100];
 extern vector<string> symbol;
 extern char *current;
 extern char commandline[256];
+extern char save_commandline[256];
 extern char * token;
 extern char * next;
 extern int num_current;
