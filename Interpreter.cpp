@@ -27,16 +27,14 @@
  built-in : 6
  command  : 5
  */
-#include <stdio.h>
-#include <iostream>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string>
-#include <vector>
-#include <deque>
+
 #include "Interpreter.h"
 
 using namespace std;
+
+
+glob_t wild_ex[3];
+
 
 char *commandstring[100];
 int num_com=0;
@@ -46,6 +44,7 @@ char * argument[3][100];
 vector<string> symbol;
 char *current;
 char commandline[256];
+char save_commandline[256];
 char * token;
 char * next;
 int num_current=0;
@@ -148,7 +147,9 @@ void format_print() {
 
 //将每次读入的commandstring和token_type重置。
 void delete_command() {
-    if (debug) cout<<"IT's deleteing"<<endl;
+    memset(wild_ex,0,sizeof(wild_ex));
+    memset(commandline,0,sizeof(commandline));
+//    if (debug) cout<<"It's deleteing"<<endl;
     while(num_com) {
         commandstring[num_com--]=NULL;
     }
@@ -176,6 +177,7 @@ void prompt() {
 
 //将command line分成一个一个token放入commandstring。
 bool tokenize() {
+//    cout<<"enter the tokenize";
     char *pch;
     pch=strtok(commandline," \n");
     if (pch==NULL) {
@@ -191,20 +193,20 @@ bool tokenize() {
 //读入commandline，调用tokennize，然后判断是否复合语法及pipe个数，输出错误信息。
 bool readthisline() {
     bool flag;
-    if (debug) cout<<"HEY!!!!I'am reading this line^^^^^^"<<endl;
     if (fgets(commandline,256,stdin)!=NULL) {
-        if (debug) cout<<"HEY!!!!I'am reading this line*****"<<endl;
+        strcpy(save_commandline,commandline);
         if (!tokenize()) {
 
             return false;
         }
     }
     else if (fgets(commandline,256,stdin)==NULL) {
-        if (debug) cout<<"HEY!!!!I'am reading this line%%%%%"<<endl;
+//        if (debug) cout<<"HEY!!!!I'am reading this line%%%%%"<<endl;
 
         fprintf(stdout,"\n[ Shell Terminated ]\n");
         exit(0);
     }
+    if (debug) cout<<commandline<<endl;
     checktype();
     flag=start();
     if ( flag && checkpipe() ) {
