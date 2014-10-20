@@ -54,24 +54,68 @@ void builtin_cd() {
 }
 
 void builtin_exit() {
-    fprintf(stdout,"[ Shell Terminated ]\n");
-    exit(0);
+    job *temp=first_job;
+    if (temp->next==NULL) {
+        fprintf(stdout,"[ Shell Terminated ]\n");
+        exit(0);
+    }
+    else {
+        fprintf(stdout,"There is at least one suspended job\n");
+    }
 }
 
 
 void builtin_fg() {
-    
-    
+    int i=1;
+    int job_number=atoi(commandstring[1]);
+    job * temp=first_job;
+    if (first_job->next==NULL) {
+        cout<<"fg: no such job"<<endl;
+        return;
+    }
+    for (;i<job_number;i++) {
+        temp=temp->next;
+    }
+    if (i==job_number) {
 
+//        temp->next=temp->next->next;
+        cout<<"ready to resume jobs"<<endl;
+//准备resume suspended job
+        cout<<"Job wake up: "<<temp->next->command<<endl;
+        
+        for (int pid_th=0;pid_th<3;pid_th++) {
+            if (temp->next->pids[pid_th]!=-1) {
+                if ( kill(temp->next->pids[i],SIGCONT) == -1) {
+                    if (errno==EPERM) {
+                        cout<<"does not have permission"<<endl;
+                    }
+                }
+            }
+        }
+//维护job list
+//        temp->next=temp->next->next;
+        
+        wait_child(temp->next->pids,temp->next->fd,temp->next->command);
+        
+        temp->next=temp->next->next;
+    }
+    else {
+        cout<<"fg: no such job"<<endl;
+    }
+    cout<<"job_number"<<job_number<<endl;
 }
 
 
 void builtin_jobs() {
-    job_list *tmp=first_job;
-    if (first_job->next_job!=NULL) {
-        tmp=first_job->next_job;
+    job * temp=first_job;
+    if (first_job->next==NULL) {
+        cout<<"No suspended jobs"<<endl;
+        return;
     }
-    for (int i=1;tmp->next_job!=NULL;tmp=tmp->next_job,i++) {
-        cout<<"["<<i<<"]  "<<tmp->job_name;
+    else {
+        temp=temp->next;
+        for (int i=1;temp!=NULL;temp=temp->next,i++) {
+            cout<<"["<<i<<"] "<<temp->command;
+        }
     }
 }
