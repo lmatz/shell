@@ -22,8 +22,8 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <glob.h>
-#include "interpreter.h"
-#include "builtin.h"
+#include "Interpreter.h"
+#include "Builtin.h"
 
 using namespace std;
 
