@@ -2,5 +2,5 @@ shell
 ==============
 
 
-A job control shell
+A job control shell.
 
